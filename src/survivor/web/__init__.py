@@ -105,7 +105,10 @@ def old_bugs():
 def workload():
     "Display number of issues assigned to each developer."
     workload = ((dev, len(dev.assigned_issues())) for dev in User.objects.developers())
-    return render_template('workload.jinja2', workload=workload)
+    urls = []
+    for url in user.assigned_issues_urls():
+      urls.append(url)
+    return render_template('workload.jinja2', workload=workload, urls=urls,)
 
 ### Unassigned bugs
 

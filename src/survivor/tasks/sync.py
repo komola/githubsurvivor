@@ -49,39 +49,48 @@ def create_issue(github_issue):
 
     # TODO comments, labels
 
+    print issue.number
+
     return issue.save()
 
 def sync(types, verbose=False):
     "Refresh selected collections from GitHub."
 
     auth_token = config['github.oauth_token']
-    account_name, repo_name = config['github.repo'].split('/')
-
-    account = github.Github(auth_token).get_user(account_name)
 
     if 'users' in types:
         User.drop_collection()
-        # FIXME: can this come from config?
-        for github_user in account.get_repo(repo_name).get_collaborators():
-            try:
-                user = create_user(github_user)
-            except:
-                print 'Error creating user: %s' % github_user
-                raise
-            if verbose: print 'created user: %s' % user.login
-
     if 'issues' in types:
         Issue.drop_collection()
-        repo = account.get_repo(repo_name)
-        issues = itertools.chain(repo.get_issues(state='open'),
-                                 repo.get_issues(state='closed'))
-        for gh_issue in issues:
-            try:
-                issue = create_issue(gh_issue)
-            except:
-                print 'Error creating %s' % gh_issue
-                raise
-            if verbose: print 'created issue: %s' % issue.title
+
+    for repo in config['github.repos']:
+        account_name, repo_name = repo.split('/')
+
+        account = github.Github(auth_token).get_user(account_name)
+
+        if 'users' in types:
+            #User.drop_collection()
+            # FIXME: can this come from config?
+            for github_user in account.get_repo(repo_name).get_collaborators():
+                try:
+                    user = get_or_create_user(github_user)
+                except:
+                    print 'Error creating user: %s' % github_user
+                    raise
+                if verbose: print 'created user: %s' % user.login
+
+        if 'issues' in types:
+            #Issue.drop_collection()
+            repo = account.get_repo(repo_name)
+            issues = itertools.chain(repo.get_issues(state='open'),
+                                     repo.get_issues(state='closed'))
+            for gh_issue in issues:
+                try:
+                    issue = create_issue(gh_issue)
+                except:
+                    print 'Error creating %s' % gh_issue
+                    raise
+                if verbose: print 'created issue: %s' % issue.title
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(description='Synchronises local DB with GitHub')
@@ -90,6 +99,5 @@ if __name__ == '__main__':
 
     args = argparser.parse_args()
     types = args.model or ('users', 'issues')
-    
     init()
     sync(types, args.verbose)

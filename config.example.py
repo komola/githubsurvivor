@@ -2,9 +2,11 @@
 # Copy this to config.py and edit as required.
 
 config = {
-    # Point this at the repo you want to report on.
-    'github.repo': '99designs/githubsurvivor',
-
+    # Point this at the repos you want to report on.
+    'github.repos': (
+        '99designs/githubsurvivor',
+        # '99designs/ergo',
+    ),
     # You'll need to create an OAuth token to access your repo.
     # See https://help.github.com/articles/creating-an-oauth-token-for-command-line-use
     'github.oauth_token': 'my-secret',

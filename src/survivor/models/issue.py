@@ -35,7 +35,7 @@ class Issue(Document):
     """
     meta = {'queryset_class': IssueQuerySet}
 
-    number = IntField(unique=True, required=True)
+    number = IntField(required=True)
     title = StringField()
     state = StringField()
     assignee = ReferenceField(User, dbref=False)

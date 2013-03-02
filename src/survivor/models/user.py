@@ -49,6 +49,12 @@ class User(Document):
         whitelist = config['leaderboard_users']
         return not whitelist or self.login in whitelist
 
+    def assigned_issues_urls(self):
+        urls = (('https://github.com/%s/issues/assigned/%s' % (repo,self.login),) for repo in config['github.repos'])
+
+        return urls
+
     def assigned_issues_url(self):
-        return 'https://github.com/%s/issues/assigned/%s' % (config['github.repo'],
-                                                             self.login)
+        urls = u'hase'
+
+        return urls
